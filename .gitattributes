@@ -1,1 +1,1 @@
-Chrome-bin/132.0.6834.197/chrome.dll filter=lfs diff=lfs merge=lfs -text
+Chrome/132.0.6834.197/chrome.dll filter=lfs diff=lfs merge=lfs -text
