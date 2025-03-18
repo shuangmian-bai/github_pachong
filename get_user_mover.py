@@ -10,6 +10,7 @@ def get_user_mover(driver,url_list):
         # 请求页
         driver.get(url_list[indexs])
         time.sleep(1)
+        print(url_list[indexs])
 
         # 新建bs4对象
         soup = BeautifulSoup(driver.page_source, 'lxml')

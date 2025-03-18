@@ -50,6 +50,10 @@ def main():
         # 获取用户选择影视, 视频播放地址为url2, 并且重新定义一下name
         sj = get_user_mover(driver, url2_list)
 
+        # 关闭浏览器驱动
+        driver.quit()
+        logging.info('浏览器驱动已关闭')
+
         # 清空控制台
         print("\033c", end="")
 
@@ -79,10 +83,10 @@ def main():
 
             # 获取m3u8
             m3u8 = get_m3u8(head, url3)
-            print('m3u8地址为 : ', m3u8)
+            print('m3u8地址为',m3u8)
 
             # 解析m3u8
-            ts_list = get_ts_list(driver, m3u8)
+            ts_list = get_ts_list(head,m3u8)
 
             dow_mp4(ts_list, f'{dow_path}{name}_{ji_data}.mp4', n)
 
@@ -111,6 +115,5 @@ if __name__ == '__main__':
         'sec-fetch-user': '?1',
         'upgrade-insecure-requests': '1',
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0'
-
     }
     main()

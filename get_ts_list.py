@@ -3,12 +3,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
-def get_ts_list(driver, m3u8):
-    # 请求头
-    head = {
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0'
-    }
-
+def get_ts_list(head,m3u8):
     # 解析m3u8
     rel = requests.get(m3u8, headers=head)
 
@@ -32,11 +27,11 @@ def get_ts_list(driver, m3u8):
             print('发现子m3u8等待10s后继续')
             print('m3u8地址为 : ', m3u8)
             time.sleep(10)
-            ts_list = get_ts_list(driver, m3u8)
+            ts_list = get_ts_list(head, m3u8)
             return ts_list
         else:
             # 定义可能的后缀列表
-            valid_extensions = ['.ts', '.mp4', '.m4s']  # 根据实际情况添加或修改后缀
+            valid_extensions = ['.ts', '.mp4', '.m4s','.jpeg']  # 根据实际情况添加或修改后缀
             a = 0
             for data in datas:
                 if any(data.endswith(ext) for ext in valid_extensions):
