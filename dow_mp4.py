@@ -7,6 +7,8 @@ from requests.exceptions import RequestException, ConnectionError
 from tqdm import tqdm
 import logging
 import subprocess
+import requests
+from urllib3.exceptions import InsecureRequestWarning
 
 # 手动创建日志文件并设置编码
 log_file = 'dow_mp4.log'
@@ -116,6 +118,7 @@ def concatenate_ts_files(output_dir, output_file):
 
 
 def dow_mp4(ts_list, path, n):
+    requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
     # 从参数中提取数据
     name = os.path.basename(path)
     base_path = os.path.dirname(path)

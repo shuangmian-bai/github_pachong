@@ -41,13 +41,15 @@ def main():
         name = input('请输入想看的影视名 : ')
 
         # 获取总页码
-        pages = get_page(driver, url, name)
+        pages = get_page(head, url, name)
 
+        #https://www.cbh1.cc/public/auto/search1.html?keyword=%E5%8C%97%E4%B8%8A&page=1
         # 生成url2列表
-        url2_list = [f'{url}?keyword={name}&page={x}' for x in range(1, pages + 1)]
+        url2_list = [f'https://www.cbh1.cc/public/auto/search1.html?keyword={name}&page={x}' for x in range(1, pages + 1)]
 
         # 获取用户选择影视, 视频播放地址为url2, 并且重新定义一下name
         sj = get_user_mover(driver, url2_list)
+
         # 清空控制台
         print("\033c", end="")
 
@@ -56,10 +58,11 @@ def main():
         name = sj['name']
 
         # 获取用户选集数据
-        ji_list = get_ji(driver, url2)
+        ji_list = get_ji(head, url2)
 
         # 把选集的完整url填充
         ji_list = {ji_list[x]: path + x for x in ji_list}
+
         print("\033c", end="")
 
         # 循环取值
@@ -75,7 +78,7 @@ def main():
             # 根据分析, 视频播放为m3u8播放格式
 
             # 获取m3u8
-            m3u8 = get_m3u8(driver, url3)
+            m3u8 = get_m3u8(head, url3)
             print('m3u8地址为 : ', m3u8)
 
             # 解析m3u8
@@ -94,4 +97,20 @@ def main():
         logging.info('浏览器驱动已关闭')
 
 if __name__ == '__main__':
+    head = {
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'accept-language': 'zh-CN,zh;q=0.9',
+        'cache-control': 'max-age=0',
+        'priority':'u=0, i',
+        'sec-ch-ua': '"Chromium";v="134", "Not:A-Brand";v="24", "Microsoft Edge";v="134"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-site': 'none',
+        'sec-fetch-user': '?1',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0'
+
+    }
     main()

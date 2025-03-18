@@ -1,16 +1,19 @@
 import time
 
+import requests
 from bs4 import BeautifulSoup
 
-def get_ji(driver, url):
+def get_ji(head, url):
     # 定义返回数据字典
     datas = {}
 
+    req = requests.get(url, headers=head)
+
     # 请求集数所在页面
-    driver.get(url)
-    time.sleep(1)
+    # driver.get(url)
+    # time.sleep(1)
     # 使用BeautifulSoup解析页面内容
-    soup = BeautifulSoup(driver.page_source, 'lxml')
+    soup = BeautifulSoup(req.text, 'lxml')
     # 选择集数列表
     sj = soup.select('.myci-content__playlist')[0].select('a')
     for i in range(len(sj)):

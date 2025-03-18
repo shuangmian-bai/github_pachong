@@ -1,23 +1,21 @@
+import re
+
 from bs4 import BeautifulSoup
 import requests
 import time
 
-def get_m3u8(driver, url):
-    # 忽略ssl警告
-    requests.packages.urllib3.disable_warnings()
 
-    # 对地址发送请求
-    driver.get(url)
-    time.sleep(1)
+def get_m3u8(head, url):
+    # 忽略ssl警告
+    req = requests.get(url, headers=head)
 
     # 使用BeautifulSoup解析页面内容
-    soup = BeautifulSoup(driver.page_source, 'lxml')
+    cache = req.text
 
-    # 解析iframe
-    url2 = soup.select('#custom_player_box')[0].select('iframe')[0].attrs['src']
+    # 使用正则表达式匹配以 http 开头并以 .m3u8 结尾的 URL
+    pattern = re.compile(r'http[s]?://[^"]+\.m3u8')
+    m3u8 = pattern.search(cache).group(0)
 
-    # 对url2进行深解析
-    url2 = url2.split('?')[-1]
-    m3u8 = url2[4:]
+    m3u8 = m3u8.split('?url=')[-1]
 
     return m3u8
