@@ -1,19 +1,20 @@
 import time
+import requests
 
 from bs4 import BeautifulSoup
 
-def get_user_mover(driver,url_list):
+def get_user_mover(head,url_list):
     #计数器,记录当前页码
     indexs = 0
 
     while True:
         # 请求页
-        driver.get(url_list[indexs])
-        time.sleep(1)
+        req = requests.get(url_list[indexs], headers=head).text
+
         print(url_list[indexs])
 
         # 新建bs4对象
-        soup = BeautifulSoup(driver.page_source, 'lxml')
+        soup = BeautifulSoup(req, 'lxml')
 
         # 获取这一页所存在的影视
         datas = soup.select('.myci-vodlist__media')[0].select('li')

@@ -33,8 +33,7 @@ def main():
     options.add_argument('--headless')  # 无头模式
     options.binary_location = chrome_path  # 指定 Chrome 浏览器的路径
 
-    # 新建浏览器对象
-    driver = webdriver.Chrome(service=Service(chromedriver_path), options=options)
+
 
     try:
         # 输入关键词
@@ -48,11 +47,7 @@ def main():
         url2_list = [f'https://www.cbh1.cc/public/auto/search1.html?keyword={name}&page={x}' for x in range(1, pages + 1)]
 
         # 获取用户选择影视, 视频播放地址为url2, 并且重新定义一下name
-        sj = get_user_mover(driver, url2_list)
-
-        # 关闭浏览器驱动
-        driver.quit()
-        logging.info('浏览器驱动已关闭')
+        sj = get_user_mover(head, url2_list)
 
         # 清空控制台
         print("\033c", end="")
@@ -96,9 +91,7 @@ def main():
     except Exception as e:
         logging.error(f'程序运行时发生错误: {e}')
     finally:
-        # 关闭浏览器驱动
-        driver.quit()
-        logging.info('浏览器驱动已关闭')
+        pass
 
 if __name__ == '__main__':
     head = {
