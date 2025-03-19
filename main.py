@@ -25,6 +25,11 @@ config.read('init.ini', encoding='utf-8')
 DOW_PATH = config['Settings']['dow_path']
 N = int(config['Settings']['n'])
 
+# 从配置文件中读取 head 参数
+head = {
+    'user-agent': config['Head']['user-agent']
+}
+
 def clear_console():
     print("\033c", end="")
 
@@ -60,22 +65,6 @@ def download_video(ts_list, file_path, n):
         raise
 
 def main():
-    head = {
-        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-        'accept-language': 'zh-CN,zh;q=0.9',
-        'cache-control': 'max-age=0',
-        'priority': 'u=0, i',
-        'sec-ch-ua': '"Chromium";v="134", "Not:A-Brand";v="24", "Microsoft Edge";v="134"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Windows"',
-        'sec-fetch-dest': 'document',
-        'sec-fetch-mode': 'navigate',
-        'sec-fetch-site': 'none',
-        'sec-fetch-user': '?1',
-        'upgrade-insecure-requests': '1',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0'
-    }
-
     try:
         # 输入关键词
         name = input('请输入想看的影视名 : ')
