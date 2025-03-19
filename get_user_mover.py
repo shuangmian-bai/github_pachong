@@ -10,7 +10,6 @@ def get_user_mover(head,url_list):
     while True:
         # 请求页
         req = requests.get(url_list[indexs], headers=head).text
-
         print(url_list[indexs])
 
         # 新建bs4对象

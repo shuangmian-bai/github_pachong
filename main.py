@@ -2,8 +2,6 @@ import os
 import time
 import logging
 import configparser
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from dow_mp4 import dow_mp4
 from get_page import get_page
 from get_user_mover import get_user_mover
@@ -21,19 +19,10 @@ config.read('init.ini', encoding='utf-8')
 # 从配置文件中读取变量
 dow_path = config['Settings']['dow_path']
 n = int(config['Settings']['n'])
-chrome_path = config['Settings']['chrome_path']
-chromedriver_path = config['Settings']['chromedriver_path']
 
 def main():
     path = 'https://www.cbh1.cc'
     url = f'{path}/search/index.html'
-
-    # 设置浏览器选项
-    options = webdriver.ChromeOptions()
-    options.add_argument('--headless')  # 无头模式
-    options.binary_location = chrome_path  # 指定 Chrome 浏览器的路径
-
-
 
     try:
         # 输入关键词
@@ -78,10 +67,10 @@ def main():
 
             # 获取m3u8
             m3u8 = get_m3u8(head, url3)
-            print('m3u8地址为',m3u8)
+            print('m3u8地址为', m3u8)
 
             # 解析m3u8
-            ts_list = get_ts_list(head,m3u8)
+            ts_list = get_ts_list(head, m3u8)
 
             dow_mp4(ts_list, f'{dow_path}{name}_{ji_data}.mp4', n)
 
@@ -90,15 +79,14 @@ def main():
 
     except Exception as e:
         logging.error(f'程序运行时发生错误: {e}')
-    finally:
-        pass
+
 
 if __name__ == '__main__':
     head = {
         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
         'accept-language': 'zh-CN,zh;q=0.9',
         'cache-control': 'max-age=0',
-        'priority':'u=0, i',
+        'priority': 'u=0, i',
         'sec-ch-ua': '"Chromium";v="134", "Not:A-Brand";v="24", "Microsoft Edge";v="134"',
         'sec-ch-ua-mobile': '?0',
         'sec-ch-ua-platform': '"Windows"',
