@@ -38,8 +38,7 @@ def get_search_pages(head, url, name):
     try:
         return get_page(head, url, name)
     except Exception as e:
-        logging.error(f'获取搜索页码时发生错误: {e}')
-        raise
+        return 1
 
 def generate_search_urls(name, pages):
     return [SEARCH_PAGE_URL_TEMPLATE.format(x,name) for x in range(1, pages + 1)]
@@ -103,7 +102,6 @@ def main():
 
             # 数据提取
             url3 = ji_list[ji_data]
-
             # 获取m3u8
             m3u8 = get_m3u8(head, url3)
             print('m3u8地址为', m3u8)
@@ -120,4 +118,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    #https://www.bnjxjd.com/vodsearch.html

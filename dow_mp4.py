@@ -7,7 +7,6 @@ from requests.exceptions import RequestException, ConnectionError
 from tqdm import tqdm
 import logging
 import subprocess
-import requests
 from urllib3.exceptions import InsecureRequestWarning
 
 # 手动创建日志文件并设置编码
@@ -102,19 +101,16 @@ def download_ts_files(ts_list, output_dir, n):
 
 
 def concatenate_ts_files(output_dir, output_file):
-    """使用 Windows 的 copy 命令合并 ts 文件"""
-    hc = f'copy /b {output_dir}\\*.ts {output_file}'
-    try:
-        subprocess.run(
-            hc,
-            shell=True,
-            check=True,
-            stdout=subprocess.DEVNULL,  # 忽略标准输出
-            stderr=subprocess.DEVNULL   # 忽略标准错误
-        )
-        logging.info(f'文件合并完成: {output_file}')
-    except subprocess.CalledProcessError as e:
-        logging.error(f'文件合并失败: {e}')
+    """合并 ts 文件"""
+    ts_files = [os.path.join(output_dir, f) for f in os.listdir(output_dir) if f.endswith('.ts')]
+    ts_files.sort()  # 确保文件按顺序合并
+
+    with open(output_file, 'wb') as outfile:
+        for ts_file in ts_files:
+            with open(ts_file, 'rb') as infile:
+                outfile.write(infile.read())
+
+    logging.info(f'文件合并完成: {output_file}')
 
 
 def dow_mp4(ts_list, path, n):
