@@ -12,7 +12,7 @@ def get_user_mover(head,url_list):
         # print(url_list[indexs])
 
         # 新建bs4对象
-        soup = BeautifulSoup(req, 'lxml')
+        soup = BeautifulSoup(req, 'html.parser')
 
         # 获取这一页所存在的影视
         datas = soup.select('.stui-vodlist.clearfix')[0].select('li')

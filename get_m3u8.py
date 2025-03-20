@@ -11,7 +11,7 @@ def get_m3u8(head, url):
 
     # 使用BeautifulSoup解析页面内容
     cache = req.text
-    soup = BeautifulSoup(cache, 'lxml')
+    soup = BeautifulSoup(cache, 'html.parser')
     m3u8 = soup.select('.stui-player__video.embed-responsive.embed-responsive-16by9.clearfix')[0].select('script')[0].text
     m3u8 = m3u8.split(',"url":')[1]
     m3u8 = m3u8.split('"')[1]

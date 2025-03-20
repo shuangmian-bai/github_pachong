@@ -8,7 +8,7 @@ def get_ji(head, url):
     datas = {}
 
     req = requests.get(url, headers=head)
-    soup = BeautifulSoup(req.text, 'lxml')
+    soup = BeautifulSoup(req.text, 'html.parser')
 
     # 选择集数列表
     sj = soup.select('.stui-content__playlist.clearfix')[0].select('a')
