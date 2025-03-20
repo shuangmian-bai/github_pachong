@@ -6,7 +6,6 @@ import requests
 from requests.exceptions import RequestException, ConnectionError
 from tqdm import tqdm
 import logging
-import subprocess
 from urllib3.exceptions import InsecureRequestWarning
 
 # 手动创建日志文件并设置编码
@@ -52,6 +51,8 @@ def download_ts(ts_url, file_path, semaphore, failed_urls, progress_bar):
     with semaphore:
         try:
             response = retry_request(ts_url)
+            if response is None or len(response.content) == 0:
+                raise Exception("Empty response")
             with open(file_path, 'wb') as f:
                 f.write(response.content)
             progress_bar.set_description(f'下载完成: {file_path}')
@@ -114,11 +115,14 @@ def concatenate_ts_files(output_dir, output_file):
 
 
 def dow_mp4(ts_list, path, n):
+    """主函数：下载并合并 TS 文件为 MP4"""
     requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
+
     # 从参数中提取数据
     name = os.path.basename(path)
     base_path = os.path.dirname(path)
-    output_dir = os.path.join(base_path, name[:-4])
+    output_dir_name = os.path.splitext(name)[0]  # 去掉扩展名
+    output_dir = os.path.join(base_path, output_dir_name)
     output_file = os.path.join(base_path, name)
 
     # 确认路径存在
@@ -137,4 +141,4 @@ def dow_mp4(ts_list, path, n):
         # 合成 mp4 文件
         concatenate_ts_files(output_dir, output_file)
         # 删除 ts 文件
-        shutil.rmtree(output_dir)
+        shutil.rmtree(output_dir, ignore_errors=True)
