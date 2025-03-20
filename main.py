@@ -10,9 +10,10 @@ from get_ts_list import get_ts_list
 from get_m3u8 import get_m3u8
 
 # 常量定义
-BASE_URL = 'https://www.cbh1.cc'
-SEARCH_URL = f'{BASE_URL}/search/index.html'
-SEARCH_PAGE_URL_TEMPLATE = f'{BASE_URL}/public/auto/search1.html?keyword={{}}&page={{}}'
+BASE_URL = 'https://www.bnjxjd.com'
+SEARCH_URL = f'{BASE_URL}/vodsearch.html'
+cache = SEARCH_URL.replace('.html','')
+SEARCH_PAGE_URL_TEMPLATE = f'{cache}/page/{{}}/wd/{{}}.html'
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -41,7 +42,7 @@ def get_search_pages(head, url, name):
         raise
 
 def generate_search_urls(name, pages):
-    return [SEARCH_PAGE_URL_TEMPLATE.format(name, x) for x in range(1, pages + 1)]
+    return [SEARCH_PAGE_URL_TEMPLATE.format(x,name) for x in range(1, pages + 1)]
 
 def get_video_info(head, url2_list):
     try:
@@ -69,15 +70,15 @@ def main():
         # 输入关键词
         name = input('请输入想看的影视名 : ')
 
+        cache = SEARCH_PAGE_URL_TEMPLATE.format(1,name)
         # 获取总页码
-        pages = get_search_pages(head, SEARCH_URL, name)
+        pages = get_search_pages(head, cache, name)
 
         # 生成url2列表
         url2_list = generate_search_urls(name, pages)
 
         # 获取用户选择影视, 视频播放地址为url2, 并且重新定义一下name
         sj = get_video_info(head, url2_list)
-
         clear_console()
 
         url2 = sj['url']
@@ -109,7 +110,6 @@ def main():
 
             # 解析m3u8
             ts_list = get_ts_list(head, m3u8)
-
             download_video(ts_list, file_path, N)
 
             # 下载间隔控制
@@ -120,3 +120,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    #https://www.bnjxjd.com/vodsearch.html
