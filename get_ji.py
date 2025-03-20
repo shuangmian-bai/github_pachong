@@ -8,14 +8,10 @@ def get_ji(head, url):
     datas = {}
 
     req = requests.get(url, headers=head)
-
-    # 请求集数所在页面
-    # driver.get(url)
-    # time.sleep(1)
-    # 使用BeautifulSoup解析页面内容
     soup = BeautifulSoup(req.text, 'lxml')
+
     # 选择集数列表
-    sj = soup.select('.myci-content__playlist')[0].select('a')
+    sj = soup.select('.stui-content__playlist.clearfix')[0].select('a')
     for i in range(len(sj)):
         # 提取集数名称并去除多余空格
         ji = sj[i].text.replace('\n', '').replace(' ', '')

@@ -11,13 +11,11 @@ def get_m3u8(head, url):
 
     # 使用BeautifulSoup解析页面内容
     cache = req.text
-
-    # 使用正则表达式匹配以 http 开头并以 .m3u8 结尾的 URL
-    pattern = re.compile(r'http[s]?://[^"]+\.m3u8')
-    m3u8 = pattern.search(cache).group(0)
-
-    m3u8 = m3u8.split('?url=')[-1]
-    print(m3u8)
+    soup = BeautifulSoup(cache, 'lxml')
+    m3u8 = soup.select('.stui-player__video.embed-responsive.embed-responsive-16by9.clearfix')[0].select('script')[0].text
+    m3u8 = m3u8.split(',"url":')[1]
+    m3u8 = m3u8.split('"')[1]
+    m3u8 = m3u8.replace('\/','/')
 
     req = requests.get(m3u8,headers=head)
 
