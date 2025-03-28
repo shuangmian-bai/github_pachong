@@ -152,44 +152,67 @@ def main():
     except Exception as e:
         logging.error(f'程序运行时发生错误: {e}')
 
+
+def settings_menu(config, config_path):
+    while True:
+        print('-----------------------------------------')
+        print('0 设置下载路径')
+        print('1 设置下载并发')
+        print('2 退出')
+        choice = input('请输入 : ')
+
+        try:
+            choice = int(choice)
+        except ValueError:
+            print('无效的输入，请输入数字 0, 1 或 2。')
+            continue
+
+        if choice == 0:
+            current_path = config.get('Settings', 'dow_path', fallback=DEFAULT_DOW_PATH)
+            print('当前路径为 : ', current_path)
+            new_path = input('请输入下载路径 : ')
+
+            new_path = new_path.replace('\\', '/').rstrip('/') + '/'
+            config.set('Settings', 'dow_path', new_path)
+        elif choice == 1:
+            current_n = config.getint('Settings', 'n', fallback=DEFAULT_N)
+            print('当前并发为 : ', current_n)
+            new_n = input('请输入下载并发 : ')
+
+            try:
+                new_n = int(new_n)
+                config.set('Settings', 'n', str(new_n))
+            except ValueError:
+                print('无效的并发数，请输入一个整数。')
+                continue
+        elif choice == 2:
+            break
+        else:
+            print('无效的选择，请重新输入。')
+
+        with open(config_path, 'w', encoding='utf-8') as configfile:
+            config.write(configfile)
+
+
 if __name__ == '__main__':
     print('欢迎使用双面的影视爬虫,资源均来自于第三方接口,其中广告请勿相信!!')
     print('请输入您需要的操作')
     print('0 开始爬取')
     print('1 设置')
-    a = input('请输入 : ')
-    a = int(a)
+    choice = input('请输入 : ')
 
-    while a == 1:
-        print('-----------------------------------------')
-        if a == 2:
-            break
-        print('0 设置下载路径')
-        print('1 设置下载并发')
-        print('2 退出')
-        a = input('请输入 : ')
-        a = int(a)
+    try:
+        choice = int(choice)
+    except ValueError:
+        print('无效的输入，请输入数字 0 或 1。')
+        sys.exit(1)
 
-        if a == 0:
-            current_path = config.get('Settings', 'dow_path', fallback=DEFAULT_DOW_PATH)
-            print('当前路径为 : ', current_path)
-            cache = input('请输入下载路径 : ')
+    if choice == 0:
+        main()
+    elif choice == 1:
+        settings_menu(config, config_path)
+    else:
+        print('无效的选择，请重新输入。')
+        sys.exit(1)
 
-            cache = cache.replace('\\', '/')
-            cache += '/'
-            cache = cache.replace('//', '/')
-
-            # 设置init.ini文件
-            config.set('Settings', 'dow_path', cache)
-        if a == 1:
-            current_n = config.getint('Settings', 'n', fallback=DEFAULT_N)
-            print('当前并发为 : ', current_n)
-            cache = input('请输入下载并发 : ')
-            # 设置init.ini文件
-            config.set('Settings', 'n', cache)
-
-        with open(config_path, 'w', encoding='utf-8') as configfile:
-            config.write(configfile)
-
-        a = 1
     main()
