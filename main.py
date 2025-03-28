@@ -108,7 +108,10 @@ def main():
 
             # 解析m3u8
             ts_list = get_ts_list(head, m3u8)
-            download_video(ts_list, file_path, N)
+            if ts_list == []:
+                print('发生意外,未获取到ts列表,请查看日志')
+            else:
+                download_video(ts_list, file_path, N)
 
             # 下载间隔控制
             time.sleep(10)

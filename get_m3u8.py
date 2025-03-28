@@ -15,7 +15,8 @@ def get_m3u8(head, url):
     m3u8 = soup.select('.stui-player__video.embed-responsive.embed-responsive-16by9.clearfix')[0].select('script')[0].text
     m3u8 = m3u8.split(',"url":')[1]
     m3u8 = m3u8.split('"')[1]
-    m3u8 = m3u8.replace('\/','/')
+    m3u8 = m3u8.replace(r'\/', '/')
+    m3u8 = m3u8.encode('utf-8').decode('unicode_escape')
 
     req = requests.get(m3u8,headers=head)
 
