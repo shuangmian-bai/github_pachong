@@ -8,6 +8,7 @@ from get_user_mover import get_user_mover
 from get_ji import get_ji
 from get_ts_list import get_ts_list
 from get_m3u8 import get_m3u8
+import sys
 
 # 常量定义
 BASE_URL = 'https://www.bnjxjd.com'
@@ -18,9 +19,18 @@ SEARCH_PAGE_URL_TEMPLATE = f'{cache}/page/{{}}/wd/{{}}.html'
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+def get_config_path():
+    if getattr(sys, 'frozen', False):
+        # 如果是打包后的可执行文件，使用临时文件夹路径
+        config_path = os.path.join(sys._MEIPASS, 'init.ini')
+    else:
+        # 如果是源代码，使用当前目录
+        config_path = 'init.ini'
+    return config_path
+
 # 读取配置文件，指定编码为 utf-8
 config = configparser.ConfigParser()
-config.read('init.ini', encoding='utf-8')
+config.read(get_config_path(), encoding='utf-8')
 
 # 默认值
 DEFAULT_DOW_PATH = './下载/'
@@ -160,6 +170,6 @@ if __name__ == '__main__':
             #设置init.ini文件
             config.set('Settings', 'n', cache)
 
-        with open('init.ini', 'w', encoding='utf-8') as configfile:
+        with open(get_config_path(), 'w', encoding='utf-8') as configfile:
             config.write(configfile)
     main()
