@@ -22,13 +22,18 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 config = configparser.ConfigParser()
 config.read('init.ini', encoding='utf-8')
 
-# 从配置文件中读取变量
-DOW_PATH = config['Settings']['dow_path']
-N = int(config['Settings']['n'])
+# 默认值
+DEFAULT_DOW_PATH = './下载/'
+DEFAULT_N = 150
+DEFAULT_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0'
 
-# 从配置文件中读取 head 参数
+# 从配置文件中读取变量，如果不存在则使用默认值
+DOW_PATH = config.get('Settings', 'dow_path', fallback=DEFAULT_DOW_PATH)
+N = config.getint('Settings', 'n', fallback=DEFAULT_N)
+
+# 从配置文件中读取 head 参数，如果不存在则使用默认值
 head = {
-    'user-agent': config['Head']['user-agent']
+    'user-agent': config.get('Head', 'user-agent', fallback=DEFAULT_USER_AGENT)
 }
 
 def clear_console():
@@ -120,4 +125,41 @@ def main():
         logging.error(f'程序运行时发生错误: {e}')
 
 if __name__ == '__main__':
+    print('欢迎使用双面的影视爬虫,资源均来自于第三方接口,其中广告请勿相信!!')
+    print('请输入您需要的操作')
+    print('0 开始爬取')
+    print('1 设置')
+    a = input('请输入 : ')
+    a = int(a)
+
+    while True:
+        print('-----------------------------------------')
+        if a == 2:
+            break
+        print('0 设置下载路径')
+        print('1 设置下载并发')
+        print('2 退出')
+        a = input('请输入 : ')
+        a = int(a)
+
+        if a == 0:
+            current_path = config.get('Settings', 'dow_path', fallback=DEFAULT_DOW_PATH)
+            print('当前路径为 : ',current_path)
+            cache = input('请输入下载路径 : ')
+
+            cache = cache.replace('\\','/')
+            cache += '/'
+            cache = cache.replace('//','/')
+
+            #设置init.ini文件
+            config.set('Settings', 'dow_path', cache)
+        if a == 1:
+            current_n = config.getint('Settings', 'n', fallback=DEFAULT_N)
+            print('当前并发为 : ',current_n)
+            cache = input('请输入下载并发 : ')
+            #设置init.ini文件
+            config.set('Settings', 'n', cache)
+
+        with open('init.ini', 'w', encoding='utf-8') as configfile:
+            config.write(configfile)
     main()
