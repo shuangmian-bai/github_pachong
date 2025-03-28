@@ -9,11 +9,12 @@ from get_ji import get_ji
 from get_ts_list import get_ts_list
 from get_m3u8 import get_m3u8
 import sys
+import shutil
 
 # 常量定义
 BASE_URL = 'https://www.bnjxjd.com'
 SEARCH_URL = f'{BASE_URL}/vodsearch.html'
-cache = SEARCH_URL.replace('.html','')
+cache = SEARCH_URL.replace('.html', '')
 SEARCH_PAGE_URL_TEMPLATE = f'{cache}/page/{{}}/wd/{{}}.html'
 
 # 配置日志
@@ -21,16 +22,33 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 def get_config_path():
     if getattr(sys, 'frozen', False):
-        # 如果是打包后的可执行文件，使用临时文件夹路径
-        config_path = os.path.join(sys._MEIPASS, 'init.ini')
+        # 如果是打包后的可执行文件，使用用户目录下的配置文件
+        config_dir = os.path.expanduser('~/.github_pachong')
+        os.makedirs(config_dir, exist_ok=True)
+        config_path = os.path.join(config_dir, 'init.ini')
     else:
         # 如果是源代码，使用当前目录
         config_path = 'init.ini'
     return config_path
 
+def get_default_config_path():
+    if getattr(sys, 'frozen', False):
+        # 如果是打包后的可执行文件，使用临时目录中的默认配置文件
+        return os.path.join(sys._MEIPASS, 'init.ini')
+    else:
+        # 如果是源代码，使用当前目录中的默认配置文件
+        return 'init.ini'
+
 # 读取配置文件，指定编码为 utf-8
+config_path = get_config_path()
+default_config_path = get_default_config_path()
+
+if not os.path.exists(config_path):
+    # 如果配置文件不存在，则从默认配置文件复制
+    shutil.copy(default_config_path, config_path)
+
 config = configparser.ConfigParser()
-config.read(get_config_path(), encoding='utf-8')
+config.read(config_path, encoding='utf-8')
 
 # 默认值
 DEFAULT_DOW_PATH = './下载/'
@@ -56,7 +74,7 @@ def get_search_pages(head, url, name):
         return 1
 
 def generate_search_urls(name, pages):
-    return [SEARCH_PAGE_URL_TEMPLATE.format(x,name) for x in range(1, pages + 1)]
+    return [SEARCH_PAGE_URL_TEMPLATE.format(x, name) for x in range(1, pages + 1)]
 
 def get_video_info(head, url2_list):
     try:
@@ -84,7 +102,7 @@ def main():
         # 输入关键词
         name = input('请输入想看的影视名 : ')
 
-        cache = SEARCH_PAGE_URL_TEMPLATE.format(1,name)
+        cache = SEARCH_PAGE_URL_TEMPLATE.format(1, name)
         # 获取总页码
         pages = get_search_pages(head, cache, name)
 
@@ -154,22 +172,22 @@ if __name__ == '__main__':
 
         if a == 0:
             current_path = config.get('Settings', 'dow_path', fallback=DEFAULT_DOW_PATH)
-            print('当前路径为 : ',current_path)
+            print('当前路径为 : ', current_path)
             cache = input('请输入下载路径 : ')
 
-            cache = cache.replace('\\','/')
+            cache = cache.replace('\\', '/')
             cache += '/'
-            cache = cache.replace('//','/')
+            cache = cache.replace('//', '/')
 
-            #设置init.ini文件
+            # 设置init.ini文件
             config.set('Settings', 'dow_path', cache)
         if a == 1:
             current_n = config.getint('Settings', 'n', fallback=DEFAULT_N)
-            print('当前并发为 : ',current_n)
+            print('当前并发为 : ', current_n)
             cache = input('请输入下载并发 : ')
-            #设置init.ini文件
+            # 设置init.ini文件
             config.set('Settings', 'n', cache)
 
-        with open(get_config_path(), 'w', encoding='utf-8') as configfile:
+        with open(config_path, 'w', encoding='utf-8') as configfile:
             config.write(configfile)
     main()
