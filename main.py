@@ -160,7 +160,7 @@ if __name__ == '__main__':
     a = input('请输入 : ')
     a = int(a)
 
-    while True:
+    while a == 1:
         print('-----------------------------------------')
         if a == 2:
             break
@@ -190,4 +190,6 @@ if __name__ == '__main__':
 
         with open(config_path, 'w', encoding='utf-8') as configfile:
             config.write(configfile)
+
+        a = 1
     main()
