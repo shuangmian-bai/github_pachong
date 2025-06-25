@@ -12,16 +12,34 @@ def validate_input(prompt, cast_type=str):
 
 def clear_console():
     print("\033c", end="")
+    print_banner()  # 添加调用
 
 def print_banner():
-    print("欢迎使用影视选择器！")
+    banner = """
+     _______  _______  _______  _______  _______  _______  _______
+    (  ____ $\\/(      (  ____ \\(  ___  )(       )(  ____ $$(  ____ \\
+    | (    \\/| () () | (    \\/| (   ) || () () || (    \\/| (    \\/
+    | (__    | || || | (__    | (___) || || || || (__    | (_____
+    |  __)   | |(_)| |  __)   |  ___  || |(_)| ||  __)   (_____  \\
+    | (      | |   | | (      | (   ) || |   | || (            ) |
+    | (____/\\| )   ( | (____/\\| )   ( || )   ( || (____/\\/\\____) |
+    (_______/|/     \\(_______/|/     \\||/     \\|(_______/\\_______)
+
+        """
+    print(banner)
+    print("工具名称: shuangmians-DownReel-tool")
+    print("作者名称: 双面")
+    print("版本信息: v1.0.0")
+    print("功能描述: 高效影视资源抓取与下载工具")
+    print("=" * 80)
+
 
 def get_user_mover(head, url_list):
     #计数器,记录当前页码
     indexs = 0
     while True:
         clear_console()
-        print_banner()
+
         # 请求页
         req = requests.get(url_list[indexs], headers=head).text
         # print(url_list[indexs])
@@ -29,7 +47,7 @@ def get_user_mover(head, url_list):
         # 新建bs4对象
         soup = BeautifulSoup(req, 'html.parser')
 
-        # 获取这一页所存在的影视
+        # 获取这一页所存在��影视
         datas = soup.select('.stui-vodlist.clearfix')[0].select('li')
 
         for i in range(len(datas)):
@@ -67,5 +85,6 @@ def get_user_mover(head, url_list):
                     print('输入的序号无效，请重新输入。')
             except ValueError:
                 print('无效输入，请输入数字。')
+
 
 

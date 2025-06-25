@@ -53,6 +53,7 @@ head = {
 
 def clear_console():
     print("\033c", end="")
+    print_banner()  # 添加调用
 
 def get_search_pages(head, url, name):
     try:
@@ -116,7 +117,6 @@ def print_banner():
 def main():
     try:
         clear_console()
-        print_banner()
         print("=" * 50 + " 用户选择下载影视 " + "=" * 50)
         name = input('请输入想看的影视名 : ').strip()
         if not name:
@@ -217,3 +217,4 @@ if __name__ == '__main__':
             settings_menu(config, config_path)
         elif choice == 2:
             sys.exit(0)
+
