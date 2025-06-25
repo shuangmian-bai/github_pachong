@@ -3,6 +3,13 @@ import requests
 
 from bs4 import BeautifulSoup
 
+def validate_input(prompt, cast_type=str):
+    while True:
+        try:
+            return cast_type(input(prompt))
+        except ValueError:
+            print('输入无效，请重新输入。')
+
 def get_user_mover(head,url_list):
     #计数器,记录当前页码
     indexs = 0
@@ -31,7 +38,7 @@ def get_user_mover(head,url_list):
         if indexs != len(url_list)-1:
             print('s : 下一页')
 
-        cz = input('请输入您选择的操作或者需要下载的影视 : ').strip()
+        cz = validate_input('请输入您选择的操作或者需要下载的影视 : ', cast_type=str).strip()
         print("\033c", end="")
 
         #获取操作码执行操作

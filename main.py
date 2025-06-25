@@ -167,13 +167,8 @@ def settings_menu(config, config_path):
         print('-----------------------------------------')
         print('0 设置下载路径')
         print('1 设置下载并发')
-        print('2 返回主菜单')  # 修改提示信息
-        choice = input('请输入 : ')
-
-        try:
-            choice = int(choice)
-        except ValueError:
-            continue
+        print('2 返回主菜单')
+        choice = validate_input('请输入 : ', valid_choices=[0, 1, 2], cast_type=int)
 
         if choice == 0:
             current_path = config.get('Settings', 'dow_path', fallback=DEFAULT_DOW_PATH)
@@ -185,17 +180,10 @@ def settings_menu(config, config_path):
         elif choice == 1:
             current_n = config.getint('Settings', 'n', fallback=DEFAULT_N)
             print('当前并发为 : ', current_n)
-            new_n = input('请输入下载并发 : ')
-
-            try:
-                new_n = int(new_n)
-                config.set('Settings', 'n', str(new_n))
-            except ValueError:
-                continue
+            new_n = validate_input('请输入下载并发 : ', cast_type=int)
+            config.set('Settings', 'n', str(new_n))
         elif choice == 2:
-            return  # 返回主菜单
-        else:
-            continue
+            return
 
         with open(config_path, 'w', encoding='utf-8') as configfile:
             config.write(configfile)
@@ -203,12 +191,14 @@ def settings_menu(config, config_path):
 if __name__ == '__main__':
     print_banner()
 
-    print('欢迎使用双面的影视爬虫,资源均来自于第三方接口,其中广告请勿相信!!')
-    while True:  # 添加循环以支持返回主菜单
+    print('欢迎使用双面的���视爬虫,资源均来自于第三方接口,其中广告请勿相信!!')
+    while True:
+        print(50 * '-' + "选项主菜单" + 50 * '-')
         print('请输入您需要的操作')
         print('0 开始爬取')
         print('1 设置')
-        print('2 退出')  # 添加退出选项
+        print('2 退出')
+        print(50 * '-' + 50 * '-')
         choice = validate_input('请输入 : ', valid_choices=[0, 1, 2], cast_type=int)
 
         if choice == 0:
@@ -216,5 +206,4 @@ if __name__ == '__main__':
         elif choice == 1:
             settings_menu(config, config_path)
         elif choice == 2:
-            sys.exit(0)  # 正常退出程序
-
+            sys.exit(0)

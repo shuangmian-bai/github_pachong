@@ -3,6 +3,14 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
+def validate_input(prompt, cast_type=str):
+    while True:
+        try:
+            value = cast_type(input(prompt))
+            return value
+        except ValueError:
+            print('无效输入，请输入正确的值。')
+
 def get_ji(head, url):
     # 定义返回数据字典
     datas = {}
@@ -23,15 +31,12 @@ def get_ji(head, url):
 
     # 获取用户输入的起始和结束序列
     while True:
-        try:
-            a = int(input('请输入需要下载的起始序列 : '))
-            b = int(input('请输入需要下载的结束序列 : '))
-            if 0 <= a <= b < len(datas):
-                break
-            else:
-                print(f'输入的序列范围无效，请输入 0 到 {len(datas) - 1} 之间的整数。')
-        except ValueError:
-            print('无效输入，请输入整数。')
+        a = validate_input('请输入需要下载的起始序列 : ', cast_type=int)
+        b = validate_input('请输入需要下载的结束序列 : ', cast_type=int)
+        if 0 <= a <= b < len(datas):
+            break
+        else:
+            print(f'输入的序列范围无效，请输入 0 到 {len(datas) - 1} 之间的整数。')
 
     # 字典键转换成列表
     keys = list(datas.keys())[a:b + 1]
@@ -40,4 +45,3 @@ def get_ji(head, url):
 
     # 返回数据字典
     return datas
-
