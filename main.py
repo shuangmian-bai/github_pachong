@@ -111,10 +111,11 @@ def print_banner():
     print("作者名称: 双面")
     print("版本信息: v1.0.0")
     print("功能描述: 高效影视资源抓取与下载工具")
-    print("--------------------------------------------------")
+    print("=" * 80)
 
 def main():
     try:
+        print("=" * 50 + " 用户选择下载影视 " + "=" * 50)
         name = input('请输入想看的影视名 : ').strip()
         if not name:
             print("影视名不能为空！")
@@ -125,6 +126,8 @@ def main():
         if pages == 1:
             print("未找到相关影视资源。")
             return
+
+        print(f"找到 {pages} 页相关影视资源。")
 
         url2_list = generate_search_urls(name, pages)
         sj = get_video_info(head, url2_list)
@@ -164,10 +167,11 @@ def main():
 
 def settings_menu(config, config_path):
     while True:
-        print('-----------------------------------------')
+        print("=" * 50 + " 用户设置 " + "=" * 50)
         print('0 设置下载路径')
         print('1 设置下载并发')
         print('2 返回主菜单')
+        print("=" * 80)
         choice = validate_input('请输入 : ', valid_choices=[0, 1, 2], cast_type=int)
 
         if choice == 0:
@@ -191,14 +195,14 @@ def settings_menu(config, config_path):
 if __name__ == '__main__':
     print_banner()
 
-    print('欢迎使用双面的���视爬虫,资源均来自于第三方接口,其中广告请勿相信!!')
+    print('欢迎使用双面的影视爬虫,资源均来自于第三方接口,其中广告请勿相信!!')
     while True:
-        print(50 * '-' + "选项主菜单" + 50 * '-')
+        print("=" * 30 + " 选项主菜单 " + "=" * 30)
         print('请输入您需要的操作')
         print('0 开始爬取')
         print('1 设置')
         print('2 退出')
-        print(50 * '-' + 50 * '-')
+        print("=" * 70)
         choice = validate_input('请输入 : ', valid_choices=[0, 1, 2], cast_type=int)
 
         if choice == 0:
@@ -207,3 +211,4 @@ if __name__ == '__main__':
             settings_menu(config, config_path)
         elif choice == 2:
             sys.exit(0)
+
