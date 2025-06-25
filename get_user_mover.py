@@ -31,14 +31,14 @@ def get_user_mover(head,url_list):
         if indexs != len(url_list)-1:
             print('s : 下一页')
 
-        cz = input('请输入您选择的操作或者需要下载的影视 : ')
+        cz = input('请输入您选择的操作或者需要下载的影视 : ').strip()
         print("\033c", end="")
 
         #获取操作码执行操作
         if cz.upper() == 'W':
-            indexs -= 1
+            indexs = max(0, indexs - 1)
         elif cz.upper() == 'S':
-            indexs += 1
+            indexs = min(len(url_list) - 1, indexs + 1)
         else:
             try:
                 cz = int(cz)
@@ -51,3 +51,4 @@ def get_user_mover(head,url_list):
                     print('输入的序号无效，请重新输入。')
             except ValueError:
                 print('无效输入，请输入数字。')
+

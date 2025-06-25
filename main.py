@@ -81,23 +81,36 @@ def download_video(ts_list, file_path, n):
     except Exception:
         raise
 
+def validate_input(prompt, valid_choices=None, cast_type=str):
+    """通用输入验证函数"""
+    while True:
+        try:
+            user_input = cast_type(input(prompt).strip())
+            if valid_choices and user_input not in valid_choices:
+                print(f"无效输入，请输入以下选项之一: {valid_choices}")
+                continue
+            return user_input
+        except ValueError:
+            print(f"无效输入，请输入正确的 {cast_type.__name__} 类型值。")
+
 def main():
     try:
         name = input('请输入想看的影视名 : ').strip()
         if not name:
+            print("影视名不能为空！")
             return
 
         cache = SEARCH_PAGE_URL_TEMPLATE.format(1, name)
         pages = get_search_pages(head, cache, name)
         if pages == 1:
+            print("未找到相关影视资源。")
             return
 
         url2_list = generate_search_urls(name, pages)
         sj = get_video_info(head, url2_list)
         clear_console()
 
-        url2 = sj['url']
-        url2 = f'{BASE_URL}{url2}'
+        url2 = f'{BASE_URL}{sj["url"]}'
         name = sj['name']
 
         ji_list = get_episode_list(head, url2)
@@ -105,12 +118,12 @@ def main():
 
         clear_console()
 
-        for ji_data in ji_list:
+        for ji_data, url3 in ji_list.items():
             file_path = f'{DOW_PATH}{name}_{ji_data}.mp4'
             if os.path.exists(file_path):
+                print(f"文件已存在，跳过: {file_path}")
                 continue
 
-            url3 = ji_list[ji_data]
             print(f'-----------{name}{ji_data}----------------------')
             m3u8 = get_m3u8(head, url3)
             print('m3u8地址为', m3u8)
@@ -118,22 +131,23 @@ def main():
             try:
                 ts_list = get_ts_list(head, m3u8)
                 if not ts_list:
+                    print("未找到 ts 文件列表，跳过当前集。")
                     continue
                 download_video(ts_list, file_path, N)
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"下载失败: {e}")
 
             time.sleep(10)
 
-    except Exception:
-        raise
+    except Exception as e:
+        print(f"程序运行时发生错误: {e}")
 
 def settings_menu(config, config_path):
     while True:
         print('-----------------------------------------')
         print('0 设置下载路径')
         print('1 设置下载并发')
-        print('2 退出')
+        print('2 返回主菜单')  # 修改提示信息
         choice = input('请输入 : ')
 
         try:
@@ -159,7 +173,7 @@ def settings_menu(config, config_path):
             except ValueError:
                 continue
         elif choice == 2:
-            break
+            return  # 返回主菜单
         else:
             continue
 
@@ -170,21 +184,16 @@ if __name__ == '__main__':
     print(config_path)
     print(default_config_path)
     print('欢迎使用双面的影视爬虫,资源均来自于第三方接口,其中广告请勿相信!!')
-    print('请输入您需要的操作')
-    print('0 开始爬取')
-    print('1 设置')
-    choice = input('请输入 : ')
+    while True:  # 添加循环以支持返回主菜单
+        print('请输入您需要的操作')
+        print('0 开始爬取')
+        print('1 设置')
+        print('2 退出')  # 添加退出选项
+        choice = validate_input('请输入 : ', valid_choices=[0, 1, 2], cast_type=int)
 
-    try:
-        choice = int(choice)
-    except ValueError:
-        sys.exit(1)
-
-    if choice == 0:
-        main()
-    elif choice == 1:
-        settings_menu(config, config_path)
-    else:
-        sys.exit(1)
-
-    main()
+        if choice == 0:
+            main()
+        elif choice == 1:
+            settings_menu(config, config_path)
+        elif choice == 2:
+            sys.exit(0)  # 正常退出程序

@@ -29,7 +29,7 @@ def get_ji(head, url):
             if 0 <= a <= b < len(datas):
                 break
             else:
-                print('输入的序列范围无效，请重新输入。')
+                print(f'输入的序列范围无效，请输入 0 到 {len(datas) - 1} 之间的整数。')
         except ValueError:
             print('无效输入，请输入整数。')
 
@@ -40,3 +40,4 @@ def get_ji(head, url):
 
     # 返回数据字典
     return datas
+

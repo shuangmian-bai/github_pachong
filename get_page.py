@@ -21,4 +21,3 @@ def get_page(head, url, name):
     pages = int(pages)
 
     return pages
-

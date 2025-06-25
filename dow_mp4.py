@@ -70,6 +70,8 @@ def download_ts_files(ts_list, output_dir, n):
         for t in threads:
             t.join()
 
+    if failed_urls:
+        print(f"以下 ts 文件下载失败: {failed_urls}")
     return failed_urls
 
 def concatenate_ts_files(output_dir, output_file):
@@ -105,4 +107,3 @@ def dow_mp4(ts_list, path, n):
         concatenate_ts_files(output_dir, output_file)
         # 删除 ts 文件
         shutil.rmtree(output_dir, ignore_errors=True)
-

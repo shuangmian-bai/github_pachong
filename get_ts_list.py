@@ -4,8 +4,7 @@ import logging
 import requests
 from bs4 import BeautifulSoup
 
-def get_ts_list(head,m3u8):
-    # 解析m3u8
+def get_ts_list(head, m3u8):
     try:
         rel = requests.get(m3u8, headers=head)
         rel.raise_for_status()
@@ -16,7 +15,7 @@ def get_ts_list(head,m3u8):
     # 初始化返回列表
     ts_list = []
 
-    print('状态码为 : ', rel.status_code)
+    logging.info(f'状态码为 : {rel.status_code}')
 
     if rel.status_code == 200:
         # 看看有没有子地址
@@ -30,14 +29,14 @@ def get_ts_list(head,m3u8):
             else:
                 m3u8 = m3u8 + cache
 
-            print('发现子m3u8等待10s后继续')
-            print('m3u8地址为 : ', m3u8)
+            logging.info('发现子m3u8等待10s后继续')
+            logging.info(f'm3u8地址为 : {m3u8}')
             time.sleep(10)
             ts_list = get_ts_list(head, m3u8)
             return ts_list
         else:
             # 定义可能的后缀列表
-            valid_extensions = ['.ts', '.mp4', '.m4s','.jpeg']  # 根据实际情况添加或修改后缀
+            valid_extensions = ['.ts', '.mp4', '.m4s', '.jpeg']  # 根据实际情况添加或修改后缀
             a = 0
             for data in datas:
                 if any(data.endswith(ext) for ext in valid_extensions):
@@ -56,5 +55,5 @@ def get_ts_list(head,m3u8):
 
     # 如果错误直接返回空ts
     else:
+        logging.error(f'请求失败，状态码为: {rel.status_code}')
         return []
-
