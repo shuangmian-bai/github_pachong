@@ -130,15 +130,15 @@ def main():
             return
 
         url2_list = generate_search_urls(name, pages)
-        sj = get_video_info(head, url2_list,pages)
+        sj = get_video_info(head, url2_list, pages)
 
         url2 = f'{BASE_URL}{sj["url"]}'
         name = sj['name']
 
         ji_list = get_episode_list(head, url2)
-        ji_list = {ji_list[x]: BASE_URL + x for x in ji_list}
+        for url3 , ji_data in ji_list.items():
+            url3 = BASE_URL + url3
 
-        for ji_data, url3 in ji_list.items():
             file_path = f'{DOW_PATH}{name}_{ji_data}.mp4'
             if os.path.exists(file_path):
                 print(f"文件已存在，跳过: {file_path}")
@@ -146,7 +146,9 @@ def main():
 
             print(f'-----------{name}{ji_data}----------------------')
             m3u8 = get_m3u8(head, url3)
-            print('m3u8地址为', m3u8)
+            if not m3u8:
+                print("未找到 m3u8 地址，跳过当前集。")
+                continue
 
             try:
                 ts_list = get_ts_list(head, m3u8)
@@ -207,4 +209,3 @@ if __name__ == '__main__':
             settings_menu(config, config_path)
         elif choice == 2:
             sys.exit(0)
-

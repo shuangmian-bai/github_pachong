@@ -34,58 +34,41 @@ def print_banner():
     print("=" * 80)
 
 
-def get_user_mover(head, url_list,pages):
-    #计数器,记录当前页码
-    indexs = 0
+def get_user_mover(head, url_list, pages):
+    """获取用户选择的影视资源"""
+    index = 0
     while True:
         clear_console()
         print(f"找到 {pages} 页相关影视资源。")
-
-        # 请求页
-        req = requests.get(url_list[indexs], headers=head).text
-        # print(url_list[indexs])
-
-        # 新建bs4对象
+        req = requests.get(url_list[index], headers=head).text
         soup = BeautifulSoup(req, 'html.parser')
+        datas = soup.select('.stui-vodlist.clearfix li')
 
-        # 获取这一页所存在的影视
-        datas = soup.select('.stui-vodlist.clearfix')[0].select('li')
+        for i, data in enumerate(datas):
+            thumb = data.select_one('.stui-vodlist__thumb.lazyload')
+            name = thumb.get('title')
+            tags = '__'.join(tag.text for tag in thumb.select('span b'))
+            print(f'{i} : {name}__{tags}')
 
-        for i in range(len(datas)):
-            data = datas[i]
-            cache = data.select('.stui-vodlist__thumb.lazyload')[0]
-            name = cache.get('title')
-            cache = [j.select('b')[0].text for j in cache.select('span')[1:]]
-            # 使用 ''.join() 方法将列表中的元素拼接成一个字符串
-            name = name + '__' + '__'.join(cache)
-            print(f'{i} : {name}')
-        if indexs != 0:
+        if index > 0:
             print('w : 上一页')
-
-        if indexs != len(url_list)-1:
+        if index < len(url_list) - 1:
             print('s : 下一页')
 
-        cz = validate_input('请输入您选择的操作或者需要下载的影视 : ', cast_type=str).strip()
-        clear_console()
-
-        #获取操作码执行操作
-        if cz.upper() == 'W':
-            indexs = max(0, indexs - 1)
-        elif cz.upper() == 'S':
-            indexs = min(len(url_list) - 1, indexs + 1)
+        choice = validate_input('请输入操作或选择的序号: ', cast_type=str).strip()
+        if choice.lower() == 'w' and index > 0:
+            index -= 1
+        elif choice.lower() == 's' and index < len(url_list) - 1:
+            index += 1
         else:
             try:
-                cz = int(cz)
-                if 0 <= cz < len(datas):
-                    root = soup.select('.col-md-6.col-sm-4.col-xs-3')[cz]
-                    url = root.select('.stui-vodlist__thumb.lazyload')[0].get('href')
-                    name = root.select('.stui-vodlist__thumb.lazyload')[0].get('title')
+                choice = int(choice)
+                if 0 <= choice < len(datas):
+                    selected = datas[choice]
+                    url = selected.select_one('.stui-vodlist__thumb.lazyload').get('href')
+                    name = selected.select_one('.stui-vodlist__thumb.lazyload').get('title')
                     return {'name': name, 'url': url}
                 else:
                     print('输入的序号无效，请重新输入。')
             except ValueError:
-                print('无效输入，请输入数字。')
-
-
-
-
+                print('无效输入，请输入数字或操作符。')

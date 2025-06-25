@@ -10,16 +10,13 @@ from urllib3.exceptions import InsecureRequestWarning
 def retry_request(url, max_retries=3, backoff_factor=2):
     """尝试请求 URL，直到成功或达到最大重试次数"""
     session = requests.Session()
-    retries = 0
-
-    while retries < max_retries:
+    for retries in range(max_retries):
         try:
             response = session.get(url, timeout=10, verify=False)
             response.raise_for_status()
             return response
         except (ConnectionError, RequestException):
-            retries += 1
-            time.sleep(backoff_factor * retries)
+            time.sleep(backoff_factor * (retries + 1))
     return None
 
 def download_ts(ts_url, file_path, semaphore, failed_urls, progress_bar):
@@ -41,32 +38,22 @@ def download_ts_files(ts_list, output_dir, n):
     """下载所有 ts 文件"""
     semaphore = threading.Semaphore(n)
     failed_urls = []
+    lens = len(str(len(ts_list)))  # 计算文件名长度
 
-    # 计算文件名长度
-    lens = len(str(len(ts_list)))
+    def worker(ts_url, file_path):
+        download_ts(ts_url, file_path, semaphore, failed_urls, progress_bar)
 
     threads = []
     with tqdm(total=len(ts_list), desc='下载进度') as progress_bar:
         for i, ts in enumerate(ts_list):
             ts_name = str(i).zfill(lens)
             file_path = os.path.join(output_dir, f'{ts_name}.ts')
-
-            # 检查文件是否存在
             if os.path.exists(file_path):
-                progress_bar.set_description(f'文件已存在: {file_path}')
-                progress_bar.update(1)  # 更新进度条
+                progress_bar.update(1)
                 continue
-
-            # 创建线程对象
-            t = threading.Thread(target=download_ts, args=(ts, file_path, semaphore, failed_urls, progress_bar))
+            t = threading.Thread(target=worker, args=(ts, file_path))
             t.start()
             threads.append(t)
-
-            # 每启动 n 个线程后等待 5 秒
-            if (i + 1) % n == 0:
-                time.sleep(5)
-
-        # 等待所有线程完成
         for t in threads:
             t.join()
 
