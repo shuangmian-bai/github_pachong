@@ -53,7 +53,7 @@ head = {
 
 def clear_console():
     print("\033c", end="")
-    print_banner()  # 添加调用
+    print_banner()
 
 def get_search_pages(head, url, name):
     try:
@@ -130,7 +130,6 @@ def main():
             return
 
         clear_console()
-        print_banner()
         print(f"找到 {pages} 页相关影视资源。")
 
         url2_list = generate_search_urls(name, pages)
@@ -144,7 +143,6 @@ def main():
         ji_list = {ji_list[x]: BASE_URL + x for x in ji_list}
 
         clear_console()
-        print_banner()
 
         for ji_data, url3 in ji_list.items():
             file_path = f'{DOW_PATH}{name}_{ji_data}.mp4'
@@ -173,7 +171,6 @@ def main():
 def settings_menu(config, config_path):
     while True:
         clear_console()
-        print_banner()
         print("=" * 50 + " 用户设置 " + "=" * 50)
         print('0 设置下载路径')
         print('1 设置下载并发')
@@ -217,4 +214,3 @@ if __name__ == '__main__':
             settings_menu(config, config_path)
         elif choice == 2:
             sys.exit(0)
-

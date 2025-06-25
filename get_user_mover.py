@@ -12,7 +12,7 @@ def validate_input(prompt, cast_type=str):
 
 def clear_console():
     print("\033c", end="")
-    print_banner()  # 添加调用
+    print_banner()
 
 def print_banner():
     banner = """
@@ -47,7 +47,7 @@ def get_user_mover(head, url_list):
         # 新建bs4对象
         soup = BeautifulSoup(req, 'html.parser')
 
-        # 获取这一页所存在��影视
+        # 获取这一页所存在的影视
         datas = soup.select('.stui-vodlist.clearfix')[0].select('li')
 
         for i in range(len(datas)):
@@ -66,7 +66,6 @@ def get_user_mover(head, url_list):
 
         cz = validate_input('请输入您选择的操作或者需要下载的影视 : ', cast_type=str).strip()
         clear_console()
-        print_banner()
 
         #获取操作码执行操作
         if cz.upper() == 'W':
@@ -85,6 +84,7 @@ def get_user_mover(head, url_list):
                     print('输入的序号无效，请重新输入。')
             except ValueError:
                 print('无效输入，请输入数字。')
+
 
 
 

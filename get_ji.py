@@ -13,7 +13,7 @@ def validate_input(prompt, cast_type=str):
 
 def clear_console():
     print("\033[H\033[J", end="")
-    print_banner()  # 添加调用
+    print_banner()
 
 def print_banner():
     banner = """
@@ -71,5 +71,6 @@ def get_ji(head, url):
 
     # 返回数据字典
     return datas
+
 
 
