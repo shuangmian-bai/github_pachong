@@ -64,9 +64,9 @@ def get_search_pages(head, url, name):
 def generate_search_urls(name, pages):
     return [SEARCH_PAGE_URL_TEMPLATE.format(x, name) for x in range(1, pages + 1)]
 
-def get_video_info(head, url2_list):
+def get_video_info(head, url2_list,pages):
     try:
-        return get_user_mover(head, url2_list)
+        return get_user_mover(head, url2_list,pages)
     except Exception:
         raise
 
@@ -129,20 +129,14 @@ def main():
             print("未找到相关影视资源。")
             return
 
-        clear_console()
-        print(f"找到 {pages} 页相关影视资源。")
-
         url2_list = generate_search_urls(name, pages)
-        sj = get_video_info(head, url2_list)
-        clear_console()
+        sj = get_video_info(head, url2_list,pages)
 
         url2 = f'{BASE_URL}{sj["url"]}'
         name = sj['name']
 
         ji_list = get_episode_list(head, url2)
         ji_list = {ji_list[x]: BASE_URL + x for x in ji_list}
-
-        clear_console()
 
         for ji_data, url3 in ji_list.items():
             file_path = f'{DOW_PATH}{name}_{ji_data}.mp4'
@@ -199,7 +193,6 @@ def settings_menu(config, config_path):
 if __name__ == '__main__':
     while True:
         clear_console()
-        print_banner()
         print("=" * 30 + " 选项主菜单 " + "=" * 30)
         print('请输入您需要的操作')
         print('0 开始爬取')
@@ -214,3 +207,4 @@ if __name__ == '__main__':
             settings_menu(config, config_path)
         elif choice == 2:
             sys.exit(0)
+

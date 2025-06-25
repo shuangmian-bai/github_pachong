@@ -34,11 +34,12 @@ def print_banner():
     print("=" * 80)
 
 
-def get_user_mover(head, url_list):
+def get_user_mover(head, url_list,pages):
     #计数器,记录当前页码
     indexs = 0
     while True:
         clear_console()
+        print(f"找到 {pages} 页相关影视资源。")
 
         # 请求页
         req = requests.get(url_list[indexs], headers=head).text
