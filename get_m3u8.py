@@ -1,4 +1,5 @@
 import re
+import logging
 
 from bs4 import BeautifulSoup
 import requests
@@ -7,7 +8,12 @@ import time
 
 def get_m3u8(head, url):
     # 忽略ssl警告
-    req = requests.get(url, headers=head)
+    try:
+        req = requests.get(url, headers=head)
+        req.raise_for_status()
+    except requests.RequestException as e:
+        logging.error(f'获取 m3u8 时发生错误: {e}')
+        return None
 
     # 使用BeautifulSoup解析页面内容
     cache = req.text

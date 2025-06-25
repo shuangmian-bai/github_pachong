@@ -22,8 +22,16 @@ def get_ji(head, url):
         print(f'{i} : {ji}')
 
     # 获取用户输入的起始和结束序列
-    a = int(input('请输入需要下载的起始序列 : '))
-    b = int(input('请输入需要下载的结束序列 : '))
+    while True:
+        try:
+            a = int(input('请输入需要下载的起始序列 : '))
+            b = int(input('请输入需要下载的结束序列 : '))
+            if 0 <= a <= b < len(datas):
+                break
+            else:
+                print('输入的序列范围无效，请重新输入。')
+        except ValueError:
+            print('无效输入，请输入整数。')
 
     # 字典键转换成列表
     keys = list(datas.keys())[a:b + 1]

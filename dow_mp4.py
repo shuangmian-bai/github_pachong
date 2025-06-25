@@ -26,7 +26,7 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 
-def retry_request(url, max_retries=3, backoff_factor=5):
+def retry_request(url, max_retries=3, backoff_factor=2):
     """尝试请求 URL，直到成功或达到最大重试次数"""
     session = requests.Session()
     retries = 0
@@ -34,16 +34,14 @@ def retry_request(url, max_retries=3, backoff_factor=5):
     while retries < max_retries:
         try:
             response = session.get(url, timeout=10, verify=False)
-            response.raise_for_status()  # 如果响应状态码不是 200，抛出异常
+            response.raise_for_status()
             return response
         except (ConnectionError, RequestException) as e:
             retries += 1
-            if retries < max_retries:
-                logging.error(f'请求失败: {url} (异常: {e}), 重试 {retries}/{max_retries}')
-                time.sleep(backoff_factor)
-            else:
-                logging.error(f'请求失败: {url} (异常: {e}), 已达到最大重试次数')
-                raise
+            logging.warning(f'请求失败: {url} (异常: {e}), 重试 {retries}/{max_retries}')
+            time.sleep(backoff_factor * retries)
+    logging.error(f'请求失败: {url}，已达到最大重试次数')
+    return None
 
 
 def download_ts(ts_url, file_path, semaphore, failed_urls, progress_bar):

@@ -1,11 +1,17 @@
 import time
+import logging
 
 import requests
 from bs4 import BeautifulSoup
 
 def get_ts_list(head,m3u8):
     # 解析m3u8
-    rel = requests.get(m3u8, headers=head)
+    try:
+        rel = requests.get(m3u8, headers=head)
+        rel.raise_for_status()
+    except requests.RequestException as e:
+        logging.error(f'获取 ts 列表时发生错误: {e}')
+        return []
 
     # 初始化返回列表
     ts_list = []
@@ -51,3 +57,4 @@ def get_ts_list(head,m3u8):
     # 如果错误直接返回空ts
     else:
         return []
+

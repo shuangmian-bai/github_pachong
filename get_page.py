@@ -1,10 +1,16 @@
 import time
+import logging
 
 import requests
 from bs4 import BeautifulSoup
 
 def get_page(head, url, name):
-    req = requests.get(url,headers=head)
+    try:
+        req = requests.get(url, headers=head)
+        req.raise_for_status()
+    except requests.RequestException as e:
+        logging.error(f'获取页面时发生错误: {e}')
+        return 1
 
     # 使用BeautifulSoup解析页面内容
     soup = BeautifulSoup(req.text, 'html.parser')
@@ -15,3 +21,4 @@ def get_page(head, url, name):
     pages = int(pages)
 
     return pages
+

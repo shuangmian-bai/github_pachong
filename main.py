@@ -18,7 +18,14 @@ cache = SEARCH_URL.replace('.html', '')
 SEARCH_PAGE_URL_TEMPLATE = f'{cache}/page/{{}}/wd/{{}}.html'
 
 # 配置日志
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("app.log", encoding="utf-8"),
+        logging.StreamHandler()
+    ]
+)
 
 def get_config_path():
     if getattr(sys, 'frozen', False):
@@ -71,7 +78,8 @@ def get_search_pages(head, url, name):
     try:
         return get_page(head, url, name)
     except Exception as e:
-        return 1
+        logging.error(f'获取搜索页时发生错误: {e}')
+        return 1  # 返回默认页码
 
 def generate_search_urls(name, pages):
     return [SEARCH_PAGE_URL_TEMPLATE.format(x, name) for x in range(1, pages + 1)]
@@ -100,11 +108,17 @@ def download_video(ts_list, file_path, n):
 def main():
     try:
         # 输入关键词
-        name = input('请输入想看的影视名 : ')
+        name = input('请输入想看的影视名 : ').strip()
+        if not name:
+            logging.warning('输入的影视名为空，程序退出。')
+            return
 
         cache = SEARCH_PAGE_URL_TEMPLATE.format(1, name)
         # 获取总页码
         pages = get_search_pages(head, cache, name)
+        if pages == 1:
+            logging.warning('未找到相关影视，程序退出。')
+            return
 
         # 生成url2列表
         url2_list = generate_search_urls(name, pages)
@@ -136,21 +150,26 @@ def main():
             # 数据提取
             url3 = ji_list[ji_data]
             # 获取m3u8
+            print(f'-----------{name}{ji_data}----------------------')
             m3u8 = get_m3u8(head, url3)
             print('m3u8地址为', m3u8)
 
             # 解析m3u8
-            ts_list = get_ts_list(head, m3u8)
-            if ts_list == []:
-                print('发生意外,未获取到ts列表,请查看日志')
-            else:
+            try:
+                ts_list = get_ts_list(head, m3u8)
+                if not ts_list:
+                    logging.error('未获取到 ts 列表，请检查日志。')
+                    continue
                 download_video(ts_list, file_path, N)
+            except Exception as e:
+                logging.error(f'处理选集 {ji_data} 时发生错误: {e}')
 
             # 下载间隔控制
             time.sleep(10)
 
     except Exception as e:
         logging.error(f'程序运行时发生错误: {e}')
+        raise
 
 
 def settings_menu(config, config_path):
@@ -195,6 +214,8 @@ def settings_menu(config, config_path):
 
 
 if __name__ == '__main__':
+    print(config_path)
+    print(default_config_path)
     print('欢迎使用双面的影视爬虫,资源均来自于第三方接口,其中广告请勿相信!!')
     print('请输入您需要的操作')
     print('0 开始爬取')
@@ -216,3 +237,4 @@ if __name__ == '__main__':
         sys.exit(1)
 
     main()
+

@@ -40,8 +40,14 @@ def get_user_mover(head,url_list):
         elif cz.upper() == 'S':
             indexs += 1
         else:
-            cz = int(cz)
-            root = soup.select('.col-md-6.col-sm-4.col-xs-3')[cz]
-            url = root.select('.stui-vodlist__thumb.lazyload')[0].get('href')
-            name = root.select('.stui-vodlist__thumb.lazyload')[0].get('title')
-            return {'name':name,'url':url}
+            try:
+                cz = int(cz)
+                if 0 <= cz < len(datas):
+                    root = soup.select('.col-md-6.col-sm-4.col-xs-3')[cz]
+                    url = root.select('.stui-vodlist__thumb.lazyload')[0].get('href')
+                    name = root.select('.stui-vodlist__thumb.lazyload')[0].get('title')
+                    return {'name': name, 'url': url}
+                else:
+                    print('输入的序号无效，请重新输入。')
+            except ValueError:
+                print('无效输入，请输入数字。')
