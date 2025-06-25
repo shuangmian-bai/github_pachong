@@ -1,3 +1,4 @@
+import os
 import time
 import requests
 
@@ -11,7 +12,7 @@ def validate_input(prompt, cast_type=str):
             print('输入无效，请重新输入。')
 
 def clear_console():
-    print("\033c", end="")
+    os.system('cls')  # 使用系统命令清屏
     print_banner()
 
 def print_banner():
@@ -72,3 +73,4 @@ def get_user_mover(head, url_list, pages):
                     print('输入的序号无效，请重新输入。')
             except ValueError:
                 print('无效输入，请输入数字或操作符。')
+

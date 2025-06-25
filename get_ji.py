@@ -1,3 +1,4 @@
+import os
 import time
 
 import requests
@@ -12,7 +13,7 @@ def validate_input(prompt, cast_type=str):
             print('无效输入，请输入正确的值。')
 
 def clear_console():
-    print("\033[H\033[J", end="")
+    os.system('cls')  # 使用系统命令清屏
     print_banner()
 
 def print_banner():
@@ -71,6 +72,5 @@ def get_ji(head, url):
 
     # 返回数据字典
     return datas
-
 
 

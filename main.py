@@ -52,7 +52,7 @@ head = {
 }
 
 def clear_console():
-    print("\033c", end="")
+    os.system('cls')  # 使用系统命令清屏
     print_banner()
 
 def get_search_pages(head, url, name):
@@ -209,3 +209,4 @@ if __name__ == '__main__':
             settings_menu(config, config_path)
         elif choice == 2:
             sys.exit(0)
+

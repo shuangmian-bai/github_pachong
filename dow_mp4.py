@@ -34,14 +34,21 @@ def download_ts(ts_url, file_path, semaphore, failed_urls, progress_bar):
             progress_bar.set_description(f'下载失败: {ts_url}')
             failed_urls.append(ts_url)
 
-def download_ts_files(ts_list, output_dir, n):
-    """下载所有 ts 文件"""
+def download_ts_files(ts_list, output_dir, n, max_retries=3):
+    """下载所有 ts 文件，支持失败任务的重新尝试"""
     semaphore = threading.Semaphore(n)
     failed_urls = []
     lens = len(str(len(ts_list)))  # 计算文件名长度
 
-    def worker(ts_url, file_path):
-        download_ts(ts_url, file_path, semaphore, failed_urls, progress_bar)
+    def worker(ts_url, file_path, retries):
+        nonlocal failed_urls
+        try:
+            download_ts(ts_url, file_path, semaphore, failed_urls, progress_bar)
+        except Exception:
+            if retries > 0:
+                worker(ts_url, file_path, retries - 1)
+            else:
+                failed_urls.append(ts_url)
 
     threads = []
     with tqdm(total=len(ts_list), desc='下载进度') as progress_bar:
@@ -51,7 +58,7 @@ def download_ts_files(ts_list, output_dir, n):
             if os.path.exists(file_path):
                 progress_bar.update(1)
                 continue
-            t = threading.Thread(target=worker, args=(ts, file_path))
+            t = threading.Thread(target=worker, args=(ts, file_path, max_retries))
             t.start()
             threads.append(t)
         for t in threads:
@@ -94,3 +101,5 @@ def dow_mp4(ts_list, path, n):
         concatenate_ts_files(output_dir, output_file)
         # 删除 ts 文件
         shutil.rmtree(output_dir, ignore_errors=True)
+    else:
+        print("部分文件下载失败，请检查网络或重试。")
