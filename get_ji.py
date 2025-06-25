@@ -11,7 +11,16 @@ def validate_input(prompt, cast_type=str):
         except ValueError:
             print('无效输入，请输入正确的值。')
 
+def clear_console():
+    print("\033[H\033[J", end="")
+
+def print_banner():
+    print("欢迎使用下载工具")
+    print("================")
+
 def get_ji(head, url):
+    clear_console()
+    print_banner()
     # 定义返回数据字典
     datas = {}
 
@@ -31,6 +40,7 @@ def get_ji(head, url):
 
     # 获取用户输入的起始和结束序列
     while True:
+
         a = validate_input('请输入需要下载的起始序列 : ', cast_type=int)
         b = validate_input('请输入需要下载的结束序列 : ', cast_type=int)
         if 0 <= a <= b < len(datas):
@@ -45,3 +55,4 @@ def get_ji(head, url):
 
     # 返回数据字典
     return datas
+

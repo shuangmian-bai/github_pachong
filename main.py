@@ -115,6 +115,8 @@ def print_banner():
 
 def main():
     try:
+        clear_console()
+        print_banner()
         print("=" * 50 + " 用户选择下载影视 " + "=" * 50)
         name = input('请输入想看的影视名 : ').strip()
         if not name:
@@ -127,6 +129,8 @@ def main():
             print("未找到相关影视资源。")
             return
 
+        clear_console()
+        print_banner()
         print(f"找到 {pages} 页相关影视资源。")
 
         url2_list = generate_search_urls(name, pages)
@@ -140,6 +144,7 @@ def main():
         ji_list = {ji_list[x]: BASE_URL + x for x in ji_list}
 
         clear_console()
+        print_banner()
 
         for ji_data, url3 in ji_list.items():
             file_path = f'{DOW_PATH}{name}_{ji_data}.mp4'
@@ -167,6 +172,8 @@ def main():
 
 def settings_menu(config, config_path):
     while True:
+        clear_console()
+        print_banner()
         print("=" * 50 + " 用户设置 " + "=" * 50)
         print('0 设置下载路径')
         print('1 设置下载并发')
@@ -193,10 +200,9 @@ def settings_menu(config, config_path):
             config.write(configfile)
 
 if __name__ == '__main__':
-    print_banner()
-
-    print('欢迎使用双面的影视爬虫,资源均来自于第三方接口,其中广告请勿相信!!')
     while True:
+        clear_console()
+        print_banner()
         print("=" * 30 + " 选项主菜单 " + "=" * 30)
         print('请输入您需要的操作')
         print('0 开始爬取')
@@ -211,4 +217,3 @@ if __name__ == '__main__':
             settings_menu(config, config_path)
         elif choice == 2:
             sys.exit(0)
-

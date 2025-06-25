@@ -10,10 +10,18 @@ def validate_input(prompt, cast_type=str):
         except ValueError:
             print('输入无效，请重新输入。')
 
-def get_user_mover(head,url_list):
+def clear_console():
+    print("\033c", end="")
+
+def print_banner():
+    print("欢迎使用影视选择器！")
+
+def get_user_mover(head, url_list):
     #计数器,记录当前页码
     indexs = 0
     while True:
+        clear_console()
+        print_banner()
         # 请求页
         req = requests.get(url_list[indexs], headers=head).text
         # print(url_list[indexs])
@@ -39,7 +47,8 @@ def get_user_mover(head,url_list):
             print('s : 下一页')
 
         cz = validate_input('请输入您选择的操作或者需要下载的影视 : ', cast_type=str).strip()
-        print("\033c", end="")
+        clear_console()
+        print_banner()
 
         #获取操作码执行操作
         if cz.upper() == 'W':
@@ -58,4 +67,5 @@ def get_user_mover(head,url_list):
                     print('输入的序号无效，请重新输入。')
             except ValueError:
                 print('无效输入，请输入数字。')
+
 
