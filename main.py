@@ -1,6 +1,5 @@
 import os
 import time
-import logging
 import configparser
 from dow_mp4 import dow_mp4
 from get_page import get_page
@@ -17,56 +16,37 @@ SEARCH_URL = f'{BASE_URL}/vodsearch.html'
 cache = SEARCH_URL.replace('.html', '')
 SEARCH_PAGE_URL_TEMPLATE = f'{cache}/page/{{}}/wd/{{}}.html'
 
-# 配置日志
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler("app.log", encoding="utf-8"),
-        logging.StreamHandler()
-    ]
-)
-
 def get_config_path():
     if getattr(sys, 'frozen', False):
-        # 如果是打包后的可执行文件，使用用户目录下的配置文件
         config_dir = os.path.expanduser('~/.github_pachong')
         os.makedirs(config_dir, exist_ok=True)
         config_path = os.path.join(config_dir, 'init.ini')
     else:
-        # 如果是源代码，使用当前目录
         config_path = 'init.ini'
     return config_path
 
 def get_default_config_path():
     if getattr(sys, 'frozen', False):
-        # 如果是打包后的可执行文件，使用临时目录中的默认配置文件
         return os.path.join(sys._MEIPASS, 'init.ini')
     else:
-        # 如果是源代码，使用当前目录中的默认配置文件
         return 'init.ini'
 
-# 读取配置文件，指定编码为 utf-8
 config_path = get_config_path()
 default_config_path = get_default_config_path()
 
 if not os.path.exists(config_path):
-    # 如果配置文件不存在，则从默认配置文件复制
     shutil.copy(default_config_path, config_path)
 
 config = configparser.ConfigParser()
 config.read(config_path, encoding='utf-8')
 
-# 默认值
 DEFAULT_DOW_PATH = './下载/'
 DEFAULT_N = 150
 DEFAULT_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0'
 
-# 从配置文件中读取变量，如果不存在则使用默认值
 DOW_PATH = config.get('Settings', 'dow_path', fallback=DEFAULT_DOW_PATH)
 N = config.getint('Settings', 'n', fallback=DEFAULT_N)
 
-# 从配置文件中读取 head 参数，如果不存在则使用默认值
 head = {
     'user-agent': config.get('Head', 'user-agent', fallback=DEFAULT_USER_AGENT)
 }
@@ -77,9 +57,8 @@ def clear_console():
 def get_search_pages(head, url, name):
     try:
         return get_page(head, url, name)
-    except Exception as e:
-        logging.error(f'获取搜索页时发生错误: {e}')
-        return 1  # 返回默认页码
+    except Exception:
+        return 1
 
 def generate_search_urls(name, pages):
     return [SEARCH_PAGE_URL_TEMPLATE.format(x, name) for x in range(1, pages + 1)]
@@ -87,43 +66,33 @@ def generate_search_urls(name, pages):
 def get_video_info(head, url2_list):
     try:
         return get_user_mover(head, url2_list)
-    except Exception as e:
-        logging.error(f'获取视频信息时发生错误: {e}')
+    except Exception:
         raise
 
 def get_episode_list(head, url2):
     try:
         return get_ji(head, url2)
-    except Exception as e:
-        logging.error(f'获取选集列表时发生错误: {e}')
+    except Exception:
         raise
 
 def download_video(ts_list, file_path, n):
     try:
         dow_mp4(ts_list, file_path, n)
-    except Exception as e:
-        logging.error(f'下载视频时发生错误: {e}')
+    except Exception:
         raise
 
 def main():
     try:
-        # 输入关键词
         name = input('请输入想看的影视名 : ').strip()
         if not name:
-            logging.warning('输入的影视名为空，程序退出。')
             return
 
         cache = SEARCH_PAGE_URL_TEMPLATE.format(1, name)
-        # 获取总页码
         pages = get_search_pages(head, cache, name)
         if pages == 1:
-            logging.warning('未找到相关影视，程序退出。')
             return
 
-        # 生成url2列表
         url2_list = generate_search_urls(name, pages)
-
-        # 获取用户选择影视, 视频播放地址为url2, 并且重新定义一下name
         sj = get_video_info(head, url2_list)
         clear_console()
 
@@ -131,46 +100,33 @@ def main():
         url2 = f'{BASE_URL}{url2}'
         name = sj['name']
 
-        # 获取用户选集数据
         ji_list = get_episode_list(head, url2)
-
-        # 把选集的完整url填充
         ji_list = {ji_list[x]: BASE_URL + x for x in ji_list}
 
         clear_console()
 
-        # 循环取值
         for ji_data in ji_list:
             file_path = f'{DOW_PATH}{name}_{ji_data}.mp4'
-            # 如果mp4文件已经存在, 则跳过
             if os.path.exists(file_path):
-                logging.info(f'{file_path} 已存在, 跳过')
                 continue
 
-            # 数据提取
             url3 = ji_list[ji_data]
-            # 获取m3u8
             print(f'-----------{name}{ji_data}----------------------')
             m3u8 = get_m3u8(head, url3)
             print('m3u8地址为', m3u8)
 
-            # 解析m3u8
             try:
                 ts_list = get_ts_list(head, m3u8)
                 if not ts_list:
-                    logging.error('未获取到 ts 列表，请检查日志。')
                     continue
                 download_video(ts_list, file_path, N)
-            except Exception as e:
-                logging.error(f'处理选集 {ji_data} 时发生错误: {e}')
+            except Exception:
+                pass
 
-            # 下载间隔控制
             time.sleep(10)
 
-    except Exception as e:
-        logging.error(f'程序运行时发生错误: {e}')
+    except Exception:
         raise
-
 
 def settings_menu(config, config_path):
     while True:
@@ -183,7 +139,6 @@ def settings_menu(config, config_path):
         try:
             choice = int(choice)
         except ValueError:
-            print('无效的输入，请输入数字 0, 1 或 2。')
             continue
 
         if choice == 0:
@@ -202,16 +157,14 @@ def settings_menu(config, config_path):
                 new_n = int(new_n)
                 config.set('Settings', 'n', str(new_n))
             except ValueError:
-                print('无效的并发数，请输入一个整数。')
                 continue
         elif choice == 2:
             break
         else:
-            print('无效的选择，请重新输入。')
+            continue
 
         with open(config_path, 'w', encoding='utf-8') as configfile:
             config.write(configfile)
-
 
 if __name__ == '__main__':
     print(config_path)
@@ -225,7 +178,6 @@ if __name__ == '__main__':
     try:
         choice = int(choice)
     except ValueError:
-        print('无效的输入，请输入数字 0 或 1。')
         sys.exit(1)
 
     if choice == 0:
@@ -233,8 +185,6 @@ if __name__ == '__main__':
     elif choice == 1:
         settings_menu(config, config_path)
     else:
-        print('无效的选择，请重新输入。')
         sys.exit(1)
 
     main()
-

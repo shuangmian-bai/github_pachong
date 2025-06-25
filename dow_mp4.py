@@ -5,26 +5,7 @@ import time
 import requests
 from requests.exceptions import RequestException, ConnectionError
 from tqdm import tqdm
-import logging
 from urllib3.exceptions import InsecureRequestWarning
-
-# 手动创建日志文件并设置编码
-log_file = 'dow_mp4.log'
-with open(log_file, 'w', encoding='utf-8') as f:
-    pass
-
-# 配置日志记录器
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
-# 创建文件处理器并设置编码
-file_handler = logging.FileHandler(log_file, encoding='utf-8')
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-file_handler.setFormatter(formatter)
-
-# 将文件处理器添加到日志记录器
-logger.addHandler(file_handler)
-
 
 def retry_request(url, max_retries=3, backoff_factor=2):
     """尝试请求 URL，直到成功或达到最大重试次数"""
@@ -36,13 +17,10 @@ def retry_request(url, max_retries=3, backoff_factor=2):
             response = session.get(url, timeout=10, verify=False)
             response.raise_for_status()
             return response
-        except (ConnectionError, RequestException) as e:
+        except (ConnectionError, RequestException):
             retries += 1
-            logging.warning(f'请求失败: {url} (异常: {e}), 重试 {retries}/{max_retries}')
             time.sleep(backoff_factor * retries)
-    logging.error(f'请求失败: {url}，已达到最大重试次数')
     return None
-
 
 def download_ts(ts_url, file_path, semaphore, failed_urls, progress_bar):
     """下载单个 ts 文件"""
@@ -55,12 +33,9 @@ def download_ts(ts_url, file_path, semaphore, failed_urls, progress_bar):
                 f.write(response.content)
             progress_bar.set_description(f'下载完成: {file_path}')
             progress_bar.update(1)  # 更新进度条
-            logging.info(f'下载完成: {file_path}')
-        except Exception as e:
-            progress_bar.set_description(f'下载失败: {ts_url} (异常: {e})')
+        except Exception:
+            progress_bar.set_description(f'下载失败: {ts_url}')
             failed_urls.append(ts_url)
-            logging.error(f'下载失败: {ts_url} (异常: {e})')
-
 
 def download_ts_files(ts_list, output_dir, n):
     """下载所有 ts 文件"""
@@ -80,7 +55,6 @@ def download_ts_files(ts_list, output_dir, n):
             if os.path.exists(file_path):
                 progress_bar.set_description(f'文件已存在: {file_path}')
                 progress_bar.update(1)  # 更新进度条
-                logging.info(f'文件已存在: {file_path}')
                 continue
 
             # 创建线程对象
@@ -98,7 +72,6 @@ def download_ts_files(ts_list, output_dir, n):
 
     return failed_urls
 
-
 def concatenate_ts_files(output_dir, output_file):
     """合并 ts 文件"""
     ts_files = [os.path.join(output_dir, f) for f in os.listdir(output_dir) if f.endswith('.ts')]
@@ -108,9 +81,6 @@ def concatenate_ts_files(output_dir, output_file):
         for ts_file in ts_files:
             with open(ts_file, 'rb') as infile:
                 outfile.write(infile.read())
-
-    logging.info(f'文件合并完成: {output_file}')
-
 
 def dow_mp4(ts_list, path, n):
     """主函数：下载并合并 TS 文件为 MP4"""
@@ -130,13 +100,9 @@ def dow_mp4(ts_list, path, n):
     failed_urls = download_ts_files(ts_list, output_dir, n)
 
     # 检查下载结果
-    if failed_urls:
-        logging.error('\n以下文件下载失败:')
-        for url in failed_urls:
-            logging.error(url)
-    else:
-        logging.info('\n所有文件下载成功')
+    if not failed_urls:
         # 合成 mp4 文件
         concatenate_ts_files(output_dir, output_file)
         # 删除 ts 文件
         shutil.rmtree(output_dir, ignore_errors=True)
+
