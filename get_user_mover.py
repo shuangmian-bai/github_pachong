@@ -1,9 +1,7 @@
 import os
-import time
 import requests
-
 from bs4 import BeautifulSoup
-from print_banner import print_banner  # 导入封装的 print_banner 函数
+from print_banner import print_banner
 
 def validate_input(prompt, cast_type=str):
     while True:
@@ -13,7 +11,7 @@ def validate_input(prompt, cast_type=str):
             print('输入无效，请重新输入。')
 
 def clear_console():
-    os.system('cls')  # 使用系统命令清屏
+    os.system('cls')
     print_banner()
 
 def get_user_mover(head, url_list, pages):
@@ -54,5 +52,3 @@ def get_user_mover(head, url_list, pages):
                     print('输入的序号无效，请重新输入。')
             except ValueError:
                 print('无效输入，请输入数字或操作符。')
-
-

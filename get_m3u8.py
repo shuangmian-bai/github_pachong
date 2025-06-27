@@ -1,10 +1,7 @@
 import re
 import logging
-
-from bs4 import BeautifulSoup
 import requests
-import time
-
+from bs4 import BeautifulSoup
 
 def get_m3u8(head, url):
     """获取 m3u8 文件地址"""
@@ -32,4 +29,3 @@ def get_m3u8(head, url):
         return None
 
     return m3u8
-
