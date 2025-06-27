@@ -3,6 +3,7 @@ import time
 
 import requests
 from bs4 import BeautifulSoup
+from print_banner import print_banner  # 导入封装的 print_banner 函数
 
 def validate_input(prompt, cast_type=str):
     while True:
@@ -15,26 +16,6 @@ def validate_input(prompt, cast_type=str):
 def clear_console():
     os.system('cls')  # 使用系统命令清屏
     print_banner()
-
-def print_banner():
-    banner = """
-     _______  _______  _______  _______  _______  _______  _______
-    (  ____ $\\/(      (  ____ \\(  ___  )(       )(  ____ $$(  ____ \\
-    | (    \\/| () () | (    \\/| (   ) || () () || (    \\/| (    \\/
-    | (__    | || || | (__    | (___) || || || || (__    | (_____
-    |  __)   | |(_)| |  __)   |  ___  || |(_)| ||  __)   (_____  \\
-    | (      | |   | | (      | (   ) || |   | || (            ) |
-    | (____/\\| )   ( | (____/\\| )   ( || )   ( || (____/\\/\\____) |
-    (_______/|/     \\(_______/|/     \\||/     \\|(_______/\\_______)
-
-        """
-    print(banner)
-    print("工具名称: shuangmians-DownReel-tool")
-    print("作者名称: 双面")
-    print("版本信息: v1.0.0")
-    print("功能描述: 高效影视资源抓取与下载工具")
-    print("=" * 80)
-
 
 def get_ji(head, url):
     clear_console()
@@ -72,5 +53,6 @@ def get_ji(head, url):
 
     # 返回数据字典
     return datas
+
 
 

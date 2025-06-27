@@ -7,6 +7,7 @@ from get_user_mover import get_user_mover
 from get_ji import get_ji
 from get_ts_list import get_ts_list
 from get_m3u8 import get_m3u8
+from print_banner import print_banner  # 导入封装的 print_banner 函数
 import sys
 import shutil
 
@@ -94,25 +95,6 @@ def validate_input(prompt, valid_choices=None, cast_type=str):
         except ValueError:
             print(f"无效输入，请输入正确的 {cast_type.__name__} 类型值。")
 
-
-def print_banner():
-    banner = """
- _______  _______  _______  _______  _______  _______  _______
-(  ____ $\\/(      (  ____ \\(  ___  )(       )(  ____ $$(  ____ \\
-| (    \\/| () () | (    \\/| (   ) || () () || (    \\/| (    \\/
-| (__    | || || | (__    | (___) || || || || (__    | (_____
-|  __)   | |(_)| |  __)   |  ___  || |(_)| ||  __)   (_____  \\
-| (      | |   | | (      | (   ) || |   | || (            ) |
-| (____/\\| )   ( | (____/\\| )   ( || )   ( || (____/\\/\\____) |
-(_______/|/     \\(_______/|/     \\||/     \\|(_______/\\_______)
-
-    """
-    print(banner)
-    print("工具名称: shuangmians-DownReel-tool")
-    print("作者名称: 双面")
-    print("版本信息: v1.0.0")
-    print("功能描述: 高效影视资源抓取与下载工具")
-    print("=" * 80)
 
 def main():
     try:
@@ -209,4 +191,5 @@ if __name__ == '__main__':
             settings_menu(config, config_path)
         elif choice == 2:
             sys.exit(0)
+
 
