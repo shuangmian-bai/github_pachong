@@ -1,17 +1,16 @@
 import os
 import time
 import configparser
+import sys
+import shutil
 from dow_mp4 import dow_mp4
 from get_page import get_page
 from get_user_mover import get_user_mover
 from get_ji import get_ji
 from get_ts_list import get_ts_list
 from get_m3u8 import get_m3u8
-from print_banner import print_banner  # 导入封装的 print_banner 函数
-import sys
-import shutil
+from print_banner import print_banner
 
-# 常量定义
 BASE_URL = 'https://www.bnjxjd.com'
 SEARCH_URL = f'{BASE_URL}/vodsearch.html'
 cache = SEARCH_URL.replace('.html', '')
@@ -34,20 +33,16 @@ def get_default_config_path():
 
 config_path = get_config_path()
 default_config_path = get_default_config_path()
-
 if not os.path.exists(config_path):
     shutil.copy(default_config_path, config_path)
-
 config = configparser.ConfigParser()
 config.read(config_path, encoding='utf-8')
 
 DEFAULT_DOW_PATH = './下载/'
 DEFAULT_N = 150
 DEFAULT_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0'
-
 DOW_PATH = config.get('Settings', 'dow_path', fallback=DEFAULT_DOW_PATH)
 N = config.getint('Settings', 'n', fallback=DEFAULT_N)
-
 head = {
     'user-agent': config.get('Head', 'user-agent', fallback=DEFAULT_USER_AGENT)
 }
@@ -65,9 +60,9 @@ def get_search_pages(head, url, name):
 def generate_search_urls(name, pages):
     return [SEARCH_PAGE_URL_TEMPLATE.format(x, name) for x in range(1, pages + 1)]
 
-def get_video_info(head, url2_list,pages):
+def get_video_info(head, url2_list, pages):
     try:
-        return get_user_mover(head, url2_list,pages)
+        return get_user_mover(head, url2_list, pages)
     except Exception:
         raise
 
@@ -118,7 +113,7 @@ def main():
         name = sj['name']
 
         ji_list = get_episode_list(head, url2)
-        for url3 , ji_data in ji_list.items():
+        for url3, ji_data in ji_list.items():
             url3 = BASE_URL + url3
 
             file_path = f'{DOW_PATH}{name}_{ji_data}.mp4'
@@ -191,5 +186,3 @@ if __name__ == '__main__':
             settings_menu(config, config_path)
         elif choice == 2:
             sys.exit(0)
-
-

@@ -75,21 +75,23 @@ def concatenate_ts_files(output_dir, output_file):
             with open(ts_file, 'rb') as infile:
                 outfile.write(infile.read())
 
-def dow_mp4(ts_list, path, n):
-    """主函数：下载并合并 TS 文件为 MP4"""
-    requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
+def download_and_merge(ts_list, output_dir, output_file, n):
+    """下载所有 ts 并合并为 mp4"""
+    failed_urls = download_ts_files(ts_list, output_dir, n)
+    if not failed_urls:
+        concatenate_ts_files(output_dir, output_file)
+        shutil.rmtree(output_dir, ignore_errors=True)
+        return True
+    else:
+        logging.error("部分文件下载失败，请检查网络或重试。")
+        return False
 
+def dow_mp4(ts_list, path, n):
+    """主入口：下载并合并 TS 文件为 MP4"""
+    requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
     name = os.path.basename(path)
     base_path = os.path.dirname(path)
     output_dir = os.path.join(base_path, os.path.splitext(name)[0])
     output_file = os.path.join(base_path, name)
-
     os.makedirs(output_dir, exist_ok=True)
-
-    failed_urls = download_ts_files(ts_list, output_dir, n)
-
-    if not failed_urls:
-        concatenate_ts_files(output_dir, output_file)
-        shutil.rmtree(output_dir, ignore_errors=True)
-    else:
-        logging.error("部分文件下载失败，请检查网络或重试。")
+    download_and_merge(ts_list, output_dir, output_file, n)

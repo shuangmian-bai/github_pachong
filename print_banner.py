@@ -1,4 +1,3 @@
-
 def print_banner():
     """打印工具的横幅信息"""
     banner = """
