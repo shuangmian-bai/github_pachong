@@ -107,6 +107,11 @@ def main():
         if url2_list == []:
             print("未找到任何结果，请检查输入。")
         sj = get_video_info(head, url2_list, pages)
+        
+        # 添加检查，防止sj为None时继续执行
+        if sj is None:
+            print("未选择任何影视资源，返回主菜单。")
+            return
 
         url2 = f'{BASE_URL}{sj["url"]}'
         name = sj['name']
