@@ -17,9 +17,9 @@ def retry_request(url, max_retries=3, backoff_factor=2):
             response.raise_for_status()
             return response
         except (ConnectionError, RequestException) as e:
-            logging.warning(f"请求失败，重试 {retries + 1}/{max_retries}: {e}")
+            # logging.warning(f"请求失败，重试 {retries + 1}/{max_retries}: {e}")
             time.sleep(backoff_factor * (retries + 1))
-    logging.error(f"请求失败，达到最大重试次数: {url}")
+    # logging.error(f"请求失败，达到最大重试次数: {url}")
     return None
 
 def download_ts(ts_url, file_path, semaphore, failed_urls, progress_bar):
@@ -31,12 +31,11 @@ def download_ts(ts_url, file_path, semaphore, failed_urls, progress_bar):
                 raise Exception("Empty response")
             with open(file_path, 'wb') as f:
                 f.write(response.content)
-            progress_bar.set_description(f'下载完成: {file_path}')
             progress_bar.update(1)
         except Exception as e:
-            logging.error(f"下载失败: {ts_url}, 错误: {e}")
-            progress_bar.set_description(f'下载失败: {ts_url}')
+            # logging.error(f"下载失败: {ts_url}, 错误: {e}")
             failed_urls.append(ts_url)
+            progress_bar.update(1)
 
 def download_ts_files(ts_list, output_dir, n, max_retries=3):
     """下载所有 ts 文件，支持失败任务的重新尝试"""
@@ -48,6 +47,7 @@ def download_ts_files(ts_list, output_dir, n, max_retries=3):
         download_ts(ts_url, file_path, semaphore, failed_urls, progress_bar)
 
     threads = []
+    # 修改进度条描述，避免包含文件路径导致换行
     with tqdm(total=len(ts_list), desc='下载进度') as progress_bar:
         for i, ts in enumerate(ts_list):
             ts_name = str(i).zfill(lens)
@@ -83,7 +83,7 @@ def download_and_merge(ts_list, output_dir, output_file, n):
         shutil.rmtree(output_dir, ignore_errors=True)
         return True
     else:
-        logging.error("部分文件下载失败，请检查网络或重试。")
+        # # logging.error("部分文件下载失败，请检查网络或重试。")
         return False
 
 def dow_mp4(ts_list, path, n):

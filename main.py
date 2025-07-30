@@ -129,7 +129,7 @@ def main():
             if not m3u8:
                 print("未找到 m3u8 地址，跳过当前集。")
                 continue
-
+            print(f'm3u8地址为 : {m3u8}')
             try:
                 ts_list = get_ts_list(head, m3u8)
                 if not ts_list:
