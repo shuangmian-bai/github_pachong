@@ -12,7 +12,7 @@ def validate_input(prompt, cast_type=str):
             print('无效输入，请输入正确的值。')
 
 def clear_console():
-    os.system('cls')  # 使用系统命令清屏
+    os.system('cls' if os.name == 'nt' else 'clear')  # 根据操作系统选择清屏命令
     print_banner()
 
 def parse_episodes(soup):

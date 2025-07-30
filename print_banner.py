@@ -1,4 +1,8 @@
+import os
+
+
 def print_banner():
+    os.system('cls' if os.name == 'nt' else 'clear')  # 根据操作系统选择清屏命令
     """打印工具的横幅信息"""
     banner = """
  _______  _______  _______  _______  _______  _______  _______
