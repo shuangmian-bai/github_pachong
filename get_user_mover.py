@@ -11,7 +11,6 @@ def validate_input(prompt, cast_type=str):
             print('输入无效，请重新输入。')
 
 def clear_console():
-    os.system('cls')
     print_banner()
 
 def parse_movie_list(soup):

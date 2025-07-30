@@ -48,7 +48,6 @@ head = {
 }
 
 def clear_console():
-    os.system('cls')  # 使用系统命令清屏
     print_banner()
 
 def get_search_pages(head, url, name):
