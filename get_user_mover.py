@@ -34,6 +34,9 @@ def get_user_mover(head, url_list, pages):
         req = requests.get(url_list[index], headers=head).text
         soup = BeautifulSoup(req, 'html.parser')
         movie_list = parse_movie_list(soup)
+        if movie_list == []:
+            print('未找到相关影视资源。')
+            return None
         if index > 0:
             print('w : 上一页')
         if index < len(url_list) - 1:

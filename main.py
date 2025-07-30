@@ -102,11 +102,10 @@ def main():
 
         cache = SEARCH_PAGE_URL_TEMPLATE.format(1, name)
         pages = get_search_pages(head, cache, name)
-        if pages == 1:
-            print("未找到相关影视资源。")
-            return
 
         url2_list = generate_search_urls(name, pages)
+        if url2_list == []:
+            print("未找到任何结果，请检查输入。")
         sj = get_video_info(head, url2_list, pages)
 
         url2 = f'{BASE_URL}{sj["url"]}'
