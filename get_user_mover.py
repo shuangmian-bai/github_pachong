@@ -31,7 +31,6 @@ def get_user_mover(head, url_list, pages):
     index = 0
     while True:
         clear_console()
-        print(f"找到 {pages} 页相关影视资源。")
         try:
             req = requests.get(url_list[index], headers=head).text
             soup = BeautifulSoup(req, 'html.parser')
@@ -48,7 +47,7 @@ def get_user_mover(head, url_list, pages):
                     print('没有任何相关影视资源。')
                     input('按回车键返回上一级...')
                     return None
-                
+                print(f"找到 {pages} 页相关影视资源。")
                 print('\n可选操作:')
                 if has_prev_page:
                     print('w : 上一页')
